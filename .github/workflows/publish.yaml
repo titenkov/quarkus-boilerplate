@@ -48,3 +48,11 @@ jobs:
           file: ./src/main/docker/Dockerfile.native
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Notify in Slack
+        uses: titenkov/action-slack@v1
+        if: ${{ always() }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
