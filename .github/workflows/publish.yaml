@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - main
-  release:
-    types: [published]
+    tags:
+      - 'v*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v3
@@ -23,6 +23,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=raw,value={{branch}}-b${{ github.run_number }},enable={{is_default_branch}}
+            type=raw,value=latest
 
       - name: Setup JDK
         uses: graalvm/setup-graalvm@v1
@@ -48,6 +49,7 @@ jobs:
           file: ./src/main/docker/Dockerfile.native
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          push: true
 
       - name: Notify in Slack
         uses: titenkov/action-slack@v1
